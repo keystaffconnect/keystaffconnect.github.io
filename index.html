@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Keystaff Connect LLC | Premier Employment Services</title>
+    <meta name="description" content="Professional employment agencies and administrative support services in Victorville, CA. Connecting talent with opportunity.">
+    
+    <!-- Fonts: Inter for clean, modern readability -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons: FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS (CDN for single file portability) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Config for Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0F172A',   /* Deep Slate Blue */
+                        secondary: '#334155', /* Slate Grey */
+                        accent: '#2563EB',    /* Royal Blue */
+                        light: '#F8FAFC',     /* Off White */
+                        success: '#10B981',   /* Emerald Green */
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
+                        'floating': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles for Animations and Modal Logic -->
+    <style>
+        /* Base Reset & Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered delays for grids */
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; }
+
+        /* Custom Button Hover Effects */
+        .btn-primary {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transition: transform 0.3s ease;
+            transform: skewX(-15deg);
+        }
+        
+        .btn-primary:hover::after {
+            left: 100%;
+            transition: 0.5s;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.open {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-content {
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Mobile Menu Transition */
+        #mobile-menu {
+            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        
+        #mobile-menu.open {
+            max-height: 400px;
+            opacity: 1;
+        }
+
+        /* Input Focus Effects */
+        .input-field:focus + label,
+        .input-field:not(:placeholder-shown) + label {
+            transform: translateY(-1.5rem) scale(0.85);
+            color: #2563EB;
+        }
+
+        /* Hero Background Overlay */
+        .hero-bg {
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.7)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        /* Modern Card Hover */
+        .service-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Process Steps Line */
+        .process-line {
+            position: absolute;
+            top: 24px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #E2E8F0;
+            z-index: -1;
+        }
+
+        @media (max-width: 768px) {
+            .process-line {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+    <!-- Navigation Bar -->
+    <nav class="fixed w-full z-50 transition-all duration-300 bg-white/95 backdrop-blur-md shadow-sm" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-10 h-10 bg-accent rounded-lg flex items-center justify-center mr-3">
+                        <i class="fa-solid fa-layer-group text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl tracking-tight text-primary">Keystaff Connect</h1>
+                        <span class="text-xs text-slate-500 uppercase tracking-widest font-semibold">LLC</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#about" class="text-slate-600 hover:text-accent font-medium transition-colors">About</a>
+                    <a href="#services" class="text-slate-600 hover:text-accent font-medium transition-colors">Services</a>
+                    <a href="#process" class="text-slate-600 hover:text-accent font-medium transition-colors">Process</a>
+                    <button onclick="openModal()" class="btn-primary bg-primary hover:bg-slate-800 text-white px-6 py-2.5 rounded-full font-medium shadow-lg hover:shadow-xl transform active:scale-95 transition-all">
+                        Get Started
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-slate-600 hover:text-primary focus:outline-none p-2">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="md:hidden bg-white border-t border-slate-100 shadow-lg">
+            <div class="px-4 pt-2 pb-6 space-y-1">
+                <a href="#about" onclick="toggleMobileMenu()" class="block px-3 py-3 text-base font-medium text-slate-600 hover:text-accent hover:bg-slate-50 rounded-md">About Us</a>
+                <a href="#services" onclick="toggleMobileMenu()" class="block px-3 py-3 text-base font-medium text-slate-600 hover:text-accent hover:bg-slate-50 rounded-md">Our Services</a>
+                <a href="#process" onclick="toggleMobileMenu()" class="block px-3 py-3 text-base font-medium text-slate-600 hover:text-accent hover:bg-slate-50 rounded-md">Our Process</a>
+                <div class="pt-4">
+                    <button onclick="openModal(); toggleMobileMenu()" class="w-full bg-accent text-white px-4 py-3 rounded-lg font-medium shadow-md">
+                        Contact Us
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 1. Hero Section -->
+    <header class="relative h-screen flex items-center justify-center hero-bg text-white">
+        <div class="absolute inset-0 bg-black/40"></div> <!-- Additional Overlay -->
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16">
+            <span class="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-sm font-semibold tracking-wide mb-6 reveal">
+                PREMIER EMPLOYMENT SOLUTIONS IN CALIFORNIA
+            </span>
+            
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 reveal delay-100">
+                Elevating Workforce <br class="hidden md:block" />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-white">Potential</span>
+            </h1>
+            
+            <p class="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-slate-200 leading-relaxed reveal delay-200">
+                Precision staffing solutions that bridge the gap between exceptional administrative talent and forward-thinking enterprises across the Victor Valley region.
+            </p>
+            
+            <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4 reveal delay-300">
+                <button onclick="openModal()" class="btn-primary px-8 py-4 bg-accent hover:bg-blue-600 text-white rounded-lg font-semibold text-lg shadow-lg shadow-blue-500/30">
+                    Partner With Us
+                </button>
+                <a href="#services" class="px-8 py-4 bg-transparent border-2 border-white/30 hover:bg-white/10 text-white rounded-lg font-semibold text-lg transition-all backdrop-blur-sm">
+                    Explore Services
+                </a>
+            </div>
+        </div>
+
+        <!-- Scroll Down Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#about" class="text-white/70 hover:text-white transition-colors">
+                <i class="fa-solid fa-chevron-down text-2xl"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- 2. About Us Section -->
+    <section id="about" class="py-24 bg-white relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <!-- Text Content -->
+                <div class="reveal">
+                    <h2 class="text-accent font-bold tracking-wide uppercase text-sm mb-3">Who We Are</h2>
+                    <h3 class="text-3xl md:text-4xl font-bold text-primary mb-6">Redefining Administrative & Support Excellence.</h3>
+                    
+                    <div class="space-y-4 text-slate-600 leading-relaxed text-lg">
+                        <p>
+                            Keystaff Connect LLC stands at the forefront of the employment services industry, dedicated to transforming how businesses in Victorville and beyond manage their human capital.
+                        </p>
+                        <p>
+                            We specialize in Administrative and Support Services, offering a curated approach to staffing that goes beyond simple resume matching. Our methodology involves a deep understanding of organizational culture, ensuring that every placement contributes to long-term operational efficiency.
+                        </p>
+                        <p>
+                            Whether addressing complex waste management remediation staffing needs or providing high-level executive support, our team operates with unyielding integrity and precision.
+                        </p>
+                        <p>
+                            We don't just fill vacancies; we implement workforce strategies that drive productivity. By leveraging local insights and industry-leading vetting processes, Keystaff Connect remains the trusted partner for scalable business growth.
+                        </p>
+                    </div>
+
+                    <div class="mt-8 flex items-center space-x-4">
+                        <div class="flex -space-x-4">
+                            <div class="w-12 h-12 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">JP</div>
+                            <div class="w-12 h-12 rounded-full bg-slate-300 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">AS</div>
+                            <div class="w-12 h-12 rounded-full bg-slate-400 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">MR</div>
+                        </div>
+                        <span class="text-sm text-slate-500 font-medium">Trusted by industry leaders</span>
+                    </div>
+                </div>
+
+                <!-- Image/Visual -->
+                <div class="relative reveal delay-200">
+                    <div class="absolute -top-4 -left-4 w-72 h-72 bg-blue-50 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+                    <div class="absolute -bottom-8 -right-4 w-72 h-72 bg-purple-50 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+                    
+                    <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Team collaboration in modern office" class="w-full h-full object-cover transform hover:scale-105 transition-duration-700 transition-transform duration-700">
+                        
+                        <!-- Floating Stats Card -->
+                        <div class="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur shadow-lg p-6 rounded-xl border border-slate-100">
+                            <div class="flex justify-between text-center">
+                                <div>
+                                    <p class="text-3xl font-bold text-primary">98%</p>
+                                    <p class="text-xs text-slate-500 uppercase mt-1">Retention Rate</p>
+                                </div>
+                                <div class="w-px bg-slate-200"></div>
+                                <div>
+                                    <p class="text-3xl font-bold text-primary">24h</p>
+                                    <p class="text-xs text-slate-500 uppercase mt-1">Response Time</p>
+                                </div>
+                                <div class="w-px bg-slate-200"></div>
+                                <div>
+                                    <p class="text-3xl font-bold text-primary">50+</p>
+                                    <p class="text-xs text-slate-500 uppercase mt-1">Clients</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Services Section -->
+    <section id="services" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <h2 class="text-accent font-bold tracking-wide uppercase text-sm mb-3">Our Expertise</h2>
+                <h3 class="text-3xl md:text-4xl font-bold text-primary mb-4">Comprehensive Solutions for Modern Business</h3>
+                <p class="text-slate-600">Tailored staffing and administrative strategies designed to enhance your operational capability.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="bg-white p-8 rounded-2xl shadow-card service-card border border-slate-100 reveal delay-100">
+                    <div class="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 text-accent">
+                        <i class="fa-regular fa-building text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-primary mb-3">Administrative Staffing</h4>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        We provide high-caliber administrative personnel, from front-desk coordinators to executive assistants. Our candidates are screened for technical proficiency and soft skills to ensure seamless integration into your office ecosystem. We handle the vetting so you can focus on leadership.
+                    </p>
+                    <a href="javascript:void(0)" onclick="openModal()" class="text-accent font-semibold hover:text-blue-700 inline-flex items-center group">
+                        Inquire Service 
+                        <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="bg-white p-8 rounded-2xl shadow-card service-card border border-slate-100 reveal delay-200">
+                    <div class="w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center mb-6 text-emerald-600">
+                        <i class="fa-solid fa-users-gear text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-primary mb-3">Support & Remediation</h4>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Specialized support for waste management and remediation projects requires a unique workforce resilience. We deploy teams trained in safety protocols and operational compliance for industrial and environmental sectors. Reliability and safety are the cornerstones of this division.
+                    </p>
+                    <a href="javascript:void(0)" onclick="openModal()" class="text-accent font-semibold hover:text-blue-700 inline-flex items-center group">
+                        Inquire Service 
+                        <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="bg-white p-8 rounded-2xl shadow-card service-card border border-slate-100 reveal delay-300">
+                    <div class="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center mb-6 text-purple-600">
+                        <i class="fa-solid fa-file-contract text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-primary mb-3">Flexible Employment Agencies</h4>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Our agile employment agency services offer temporary, contract-to-hire, and direct placement options to adapt to market fluctuations. We help businesses scale their workforce up or down efficiently without the administrative burden. Flexibility meets compliance in every contract we manage.
+                    </p>
+                    <a href="javascript:void(0)" onclick="openModal()" class="text-accent font-semibold hover:text-blue-700 inline-flex items-center group">
+                        Inquire Service 
+                        <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Strategic Advantages (Why Choose Us) -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                
+                <div class="order-2 lg:order-1 reveal">
+                    <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Strategic meeting" class="rounded-2xl shadow-2xl">
+                </div>
+
+                <div class="order-1 lg:order-2 reveal delay-100">
+                    <h2 class="text-accent font-bold tracking-wide uppercase text-sm mb-3">The Keystaff Edge</h2>
+                    <h3 class="text-3xl md:text-4xl font-bold text-primary mb-8">Strategic Advantages for Your Business</h3>
+
+                    <div class="space-y-8">
+                        <!-- Advantage 1 -->
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-accent">
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="ml-5">
+                                <h4 class="text-xl font-bold text-primary">Rapid Deployment Protocol</h4>
+                                <p class="mt-2 text-slate-600">
+                                    Time is a critical resource. Our pre-vetted talent pool allows us to fill critical administrative vacancies significantly faster than the industry average, minimizing downtime and productivity loss for your operations in Victorville.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Advantage 2 -->
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-accent">
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="ml-5">
+                                <h4 class="text-xl font-bold text-primary">Compliance & Risk Mitigation</h4>
+                                <p class="mt-2 text-slate-600">
+                                    Navigating California's employment laws can be complex. We shoulder the burden of regulatory compliance, payroll administration, and worker classification, significantly reducing legal risks for your organization.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Advantage 3 -->
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-accent">
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="ml-5">
+                                <h4 class="text-xl font-bold text-primary">Local Market Intelligence</h4>
+                                <p class="mt-2 text-slate-600">
+                                    As a locally grounded entity in Victorville (92394), we understand the specific economic drivers and workforce demographics of the region. This insight allows us to make matches that are not just skill-aligned, but culturally compatible.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Process Section -->
+    <section id="process" class="py-24 bg-primary text-white relative">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-blue-300 font-bold tracking-wide uppercase text-sm mb-3">Our Methodology</h2>
+                <h3 class="text-3xl md:text-4xl font-bold text-white">The Path to Partnership</h3>
+            </div>
+
+            <div class="relative grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <!-- Connecting Line (Desktop) -->
+                <div class="process-line hidden md:block"></div>
+
+                <!-- Step 1 -->
+                <div class="relative reveal delay-100">
+                    <div class="w-12 h-12 mx-auto bg-accent rounded-full flex items-center justify-center text-white font-bold text-xl mb-6 shadow-[0_0_0_8px_rgba(37,99,235,0.2)] z-10 relative">
+                        1
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Strategic Consultation</h4>
+                    <p class="text-slate-300 px-4">
+                        We begin with an in-depth audit of your current staffing gaps and operational goals. This allows us to build a candidate profile that matches both technical needs and company culture.
+                    </p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative reveal delay-200">
+                    <div class="w-12 h-12 mx-auto bg-accent rounded-full flex items-center justify-center text-white font-bold text-xl mb-6 shadow-[0_0_0_8px_rgba(37,99,235,0.2)] z-10 relative">
+                        2
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Vetting & Selection</h4>
+                    <p class="text-slate-300 px-4">
+                        Our rigorous screening process includes background checks, skill assessments, and behavioral interviews. We present only the top 5% of candidates who meet your specific criteria.
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative reveal delay-300">
+                    <div class="w-12 h-12 mx-auto bg-accent rounded-full flex items-center justify-center text-white font-bold text-xl mb-6 shadow-[0_0_0_8px_rgba(37,99,235,0.2)] z-10 relative">
+                        3
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Integration & Support</h4>
+                    <p class="text-slate-300 px-4">
+                        Once a candidate is selected, we facilitate a smooth onboarding process. We maintain continuous contact to ensure performance standards are met and administrative needs are handled.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Call to Action (Phrases for Contact) -->
+    <section class="py-20 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 text-center reveal">
+            <h2 class="text-3xl font-bold text-primary mb-6">Ready to Optimize Your Workforce?</h2>
+            <p class="text-lg text-slate-600 mb-8">
+                Connect with Keystaff Connect LLC today. Whether you need immediate administrative support or long-term staffing strategies, our team is ready to assist.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button onclick="openModal()" class="btn-primary bg-primary hover:bg-slate-800 text-white px-8 py-4 rounded-lg font-semibold shadow-xl transition-all">
+                    Initiate Consultation
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / Contacts -->
+    <footer class="bg-white border-t border-slate-200 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-accent rounded flex items-center justify-center mr-2">
+                            <i class="fa-solid fa-layer-group text-white text-sm"></i>
+                        </div>
+                        <h2 class="font-bold text-lg text-primary">Keystaff Connect LLC</h2>
+                    </div>
+                    <p class="text-slate-500 mb-6 max-w-sm">
+                        Leading the way in employment services and administrative support across Victorville and the greater California region. Committed to excellence, integrity, and results.
+                    </p>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="font-bold text-primary mb-4">Navigation</h4>
+                    <ul class="space-y-2 text-slate-500">
+                        <li><a href="#about" class="hover:text-accent transition-colors">About Us</a></li>
+                        <li><a href="#services" class="hover:text-accent transition-colors">Services</a></li>
+                        <li><a href="#process" class="hover:text-accent transition-colors">Process</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info (Strictly Address & Email) -->
+                <div>
+                    <h4 class="font-bold text-primary mb-4">Contact Information</h4>
+                    <ul class="space-y-4 text-slate-500">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-location-dot mt-1 text-accent w-5"></i>
+                            <span>13799 Feller Ln<br>Victorville, CA 92394</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-envelope text-accent w-5"></i>
+                            <a href="mailto:box@keystaffconnect.info" class="hover:text-accent transition-colors">box@keystaffconnect.info</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-400">
+                <p>&copy; 2024 Keystaff Connect LLC. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-slate-600">Privacy Policy</a>
+                    <a href="#" class="hover:text-slate-600">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CONTACT MODAL -->
+    <div id="contactModal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 p-4">
+        <div class="modal-content bg-white w-full max-w-lg rounded-2xl shadow-2xl relative overflow-hidden">
+            <!-- Modal Header -->
+            <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-primary">Contact Us</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition-colors">
+                    <i class="fa-solid fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-6 md:p-8">
+                <p class="text-slate-500 text-sm mb-6">Fill out the form below and our team will respond to your email shortly.</p>
+                
+                <form id="mainContactForm" onsubmit="handleFormSubmit(event)">
+                    <div class="space-y-5">
+                        <div class="relative">
+                            <input type="text" id="name" required class="input-field w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent bg-white placeholder-transparent transition-all" placeholder="Name">
+                            <label for="name" class="absolute left-4 top-3 text-slate-400 text-sm pointer-events-none transition-all duration-200">Full Name</label>
+                        </div>
+
+                        <div class="relative">
+                            <input type="email" id="email" required class="input-field w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent bg-white placeholder-transparent transition-all" placeholder="Email">
+                            <label for="email" class="absolute left-4 top-3 text-slate-400 text-sm pointer-events-none transition-all duration-200">Email Address</label>
+                        </div>
+
+                        <div class="relative">
+                            <select id="subject" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent bg-white text-slate-600 transition-all">
+                                <option value="" disabled selected>Select Inquiry Type</option>
+                                <option value="staffing">Request Staffing</option>
+                                <option value="job">Job Seeker</option>
+                                <option value="admin">Administrative Support</option>
+                                <option value="other">General Inquiry</option>
+                            </select>
+                        </div>
+
+                        <div class="relative">
+                            <textarea id="message" rows="4" required class="input-field w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent bg-white placeholder-transparent transition-all resize-none" placeholder="Message"></textarea>
+                            <label for="message" class="absolute left-4 top-3 text-slate-400 text-sm pointer-events-none transition-all duration-200">How can we help?</label>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <button type="submit" class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform active:scale-[0.98]">
+                            Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div id="successModal" class="modal-overlay fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/60 p-4">
+        <div class="modal-content bg-white w-full max-w-sm rounded-2xl shadow-2xl p-8 text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-check text-success text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-primary mb-2">Message Sent!</h3>
+            <p class="text-slate-500 mb-6">Thank you for contacting Keystaff Connect. We have received your inquiry and will reply to your email address shortly.</p>
+            <button onclick="closeSuccessModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-lg transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- 1. Navigation Scroll Effect ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.replace('bg-white/95', 'bg-white');
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.classList.replace('bg-white', 'bg-white/95');
+            }
+        });
+
+        // --- 2. Mobile Menu Toggle ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('open');
+        }
+
+        // --- 3. Modal Logic ---
+        const modal = document.getElementById('contactModal');
+        const successModal = document.getElementById('successModal');
+
+        function openModal() {
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal if clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // --- 4. Form Handling & Success Logic ---
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            // Simulation of API call/processing delay
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerText;
+            
+            submitBtn.innerText = 'Sending...';
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            setTimeout(() => {
+                // Reset form
+                event.target.reset();
+                
+                // Close Contact Modal
+                closeModal();
+                
+                // Show Success Modal
+                successModal.classList.add('open');
+                
+                // Reset Button
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                
+            }, 1500); // 1.5 second delay simulation
+        }
+
+        function closeSuccessModal() {
+            successModal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // --- 5. Intersection Observer for Scroll Animations ---
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target); // Only animate once
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+    </script>
+</body>
+</html>
